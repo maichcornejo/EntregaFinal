@@ -27,7 +27,7 @@ public class CargaParametros {
 		return archivoLinea;
 	}
 
-	public static String getArchivoEstacion() {
+	public static String getArchivoParada() {
 		return archivoParada;
 	}
 

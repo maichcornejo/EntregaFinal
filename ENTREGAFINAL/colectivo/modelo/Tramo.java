@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Objects;
+
 public class Tramo {
 
 	private Parada inicio;
@@ -45,6 +47,24 @@ public class Tramo {
 
 	public void setTipo(int tipo) {
 		this.tipo = tipo;
+	}
+
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(fin, inicio);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tramo other = (Tramo) obj;
+		return Objects.equals(fin, other.fin) && Objects.equals(inicio, other.inicio);
 	}
 
 	@Override

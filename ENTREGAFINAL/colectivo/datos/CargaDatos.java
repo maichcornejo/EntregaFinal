@@ -13,18 +13,18 @@ import modelo.Tramo;
 
 public class CargaDatos {
 
-    public static TreeMap<String, Parada> cargarParadas(String fileName) {
-        TreeMap<String, Parada> paradas = new TreeMap<String, Parada>();
-
+    public static TreeMap<Integer, Parada> cargarParadas(String fileName) {
+    	
+        TreeMap<Integer, Parada> paradas = new TreeMap<Integer, Parada>();
         try {
             Scanner read = new Scanner(new File(fileName));
             read.useDelimiter("\\s*;\\s*");
-            String id, direccion;
+            String direccion;
+            int id;
             while (read.hasNext()) {
-                id = read.next();
+                id = Integer.parseInt(read.next());	
                 direccion = read.next();
-                Parada parada = new Parada(id, direccion);
-                paradas.put(id, parada);
+                paradas.put(id, new Parada(id, direccion));
             }
             read.close();
         } catch (FileNotFoundException e) {
@@ -37,7 +37,7 @@ public class CargaDatos {
         return paradas;
     }
 
-    public static TreeMap<String, Linea> cargarLineas(String fileName, TreeMap<String, Parada> paradas) {
+    public static TreeMap<String, Linea> cargarLineas(String fileName, TreeMap<Integer, Parada> paradas) {
         TreeMap<String, Linea> lineas = new TreeMap<String, Linea>();
 
         try (Scanner read = new Scanner(new File(fileName))) {
@@ -47,10 +47,14 @@ public class CargaDatos {
                 if (parts.length >= 3) {
                     String nombre = parts[0].trim();
                     String sentido = parts[1].trim(); 
-                    String[] paradasIds = parts[2].split(",");
+                    String[] paradasIdsStr = parts[2].split(",");
+                    Integer[] paradasIds = new Integer[paradasIdsStr.length];
+                    for (int i = 0; i < paradasIdsStr.length; i++) {
+                        paradasIds[i] = Integer.parseInt(paradasIdsStr[i].trim());
+                    }
                     Linea linea = new Linea(nombre);
-                    for (String paradaId : paradasIds) {
-                        Parada parada = paradas.get(paradaId.trim());
+                    for (Integer paradaId : paradasIds) {
+                        Parada parada = paradas.get(paradaId);
                         if (parada != null) {
                             if ("I".equals(sentido)) {
                                 linea.agregarParadasIda(parada);
@@ -66,15 +70,16 @@ public class CargaDatos {
             }
         } catch (FileNotFoundException e) {
             System.err.println("No se pudo encontrar el archivo: " + fileName);
-        }catch (Exception e) {
-            System.err.println("Ocurrio un error al cargar los tramos desde el archivo: " + fileName);
+        } catch (Exception e) {
+            System.err.println("Ocurrió un error al cargar los tramos desde el archivo: " + fileName);
             e.printStackTrace();
         }
 
         return lineas;
     }
 
-    public static List<Tramo> cargarTramos(String fileName, TreeMap<String, Parada> paradas) {
+
+    public static List<Tramo> cargarTramos(String fileName, TreeMap<Integer, Parada> paradas) {
         List<Tramo> tramos = new ArrayList<Tramo>();
 
         try {
@@ -83,8 +88,8 @@ public class CargaDatos {
             Parada p1, p2;
             int tiempo, tipo;
             while (read.hasNext()) {
-                p1 = paradas.get(read.next());
-                p2 = paradas.get(read.next());
+                p1 = paradas.get(Integer.parseInt(read.next()));
+                p2 = paradas.get(Integer.parseInt(read.next()));
                 tiempo = read.nextInt();
                 tipo = read.nextInt();
                 tramos.add(new Tramo(p1, p2, tiempo, tipo));
